@@ -1,0 +1,15 @@
+{{- range .Values.groups }}
+---
+apiVersion: user.openshift.io/v1
+kind: Group
+metadata:
+  name: {{ .name }}
+  annotations:
+    description: {{ .description }}
+users:
+  {{- range $.Values.users }}
+  {{- if has .groups $.name }}
+  - {{ .name }}
+  {{- end }}
+  {{- end }}
+{{- end }} 

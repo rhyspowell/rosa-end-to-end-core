@@ -1,0 +1,55 @@
+# User configurations
+users:
+  - name: "developer_dave"
+    groups:
+      - "developer_dave"
+  - name: "dan"
+    groups:
+      - "developer_dan"
+
+# Group configurations
+groups:
+  - name: "developer_dave"
+    description: "Developer_dave and his team"
+  - name: "developer_dan"
+    description: "Developer_dan and his team"
+
+namespaces:
+  - name: "developer_dave"
+    operatorgroup: false
+    bindings:
+      # this labs-devs is the GROUP NAME in IDM
+      - name: developer_dave
+        kind: Group
+        role: admin
+      # this labs-admins is the GROUP NAME in IDM
+      - name: developer_dan
+        kind: Group
+        role: view
+    namespace: developer_dave
+  - name: developer_dan
+    operatorgroup: false
+    bindings:
+      - name: developer_dave
+        kind: Group
+        role: edit
+      - name: developer_dan
+        kind: Group
+        role: admin
+      - name: dummy-sa
+        kind: ServiceAccount
+        role: admin
+    namespace: developer_dan
+  - name: "secret_takeover_the_world"
+    operatorgroup: false
+    bindings:
+      - name: labs-devs
+        kind: Group
+        role: edit
+      - name: developer_dave
+        kind: Group
+        role: admin
+      - name: dummy-sa
+        kind: ServiceAccount
+        role: admin
+    namespace: secret_takeover_the_world
