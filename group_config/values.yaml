@@ -40,7 +40,7 @@ namespaces:
         kind: ServiceAccount
         role: admin
     namespace: developer_dan
-  - name: "secret_takeover_the_world"
+  - name: "secret-takeover-the-world"
     operatorgroup: false
     bindings:
       - name: labs-devs
