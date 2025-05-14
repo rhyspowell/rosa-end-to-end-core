@@ -15,7 +15,7 @@ groups:
     description: "Developer_dan and his team"
 
 namespaces:
-  - name: "developer_dave"
+  - name: "developer-dave"
     operatorgroup: false
     bindings:
       # this labs-devs is the GROUP NAME in IDM
