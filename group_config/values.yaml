@@ -15,6 +15,9 @@ groups:
     description: "Developer_dan and his team"
 
 namespaces:
+  - name: "devspaces"
+    operatorgroup: false
+    namespace: devspaces
   - name: "developer-dave"
     operatorgroup: false
     bindings:
