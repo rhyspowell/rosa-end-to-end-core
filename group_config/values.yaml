@@ -27,7 +27,7 @@ namespaces:
         kind: Group
         role: view
     namespace: developer-dave
-  - name: developer_dan
+  - name: developer-dan
     operatorgroup: false
     bindings:
       - name: developer_dave
