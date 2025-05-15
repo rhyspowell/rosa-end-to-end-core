@@ -74,3 +74,22 @@ spec:
         insecureEdgeTerminationPolicy: Redirect
         termination: passthrough
       wildcardPolicy: None
+---
+apiVersion: argoproj.io/v1beta1
+kind: Application
+metadata:
+  name: bgd-app
+  namespace: openshift-gitops
+spec:
+  destination:
+    namespace: developer-dan
+    server: https://kubernetes.default.svc
+  project: default
+  source:
+    path: apps/bgd/overlays/bgd
+    repoURL: https://github.com/rhyspowell/developer-dan
+    targetRevision: main
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: false
