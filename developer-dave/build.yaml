@@ -45,22 +45,23 @@ roleRef:
   name: admin
   apiGroup: rbac.authorization.k8s.io
 ---
-# ---
-# apiVersion: argoproj.io/v1beta1
-# kind: Application
-# metadata:
-#   name: bgd-app
-#   namespace: developer-dave
-# spec:
-#   destination:
-#     namespace: bgd
-#     server: https://kubernetes.default.svc
-#   project: default
-#   source:
-#     path: apps/bgd/overlays/bgd
-#     repoURL: https://github.com/rhyspowell/developer-dave
-#     targetRevision: main
-#   syncPolicy:
-#     automated:
-#       prune: true
-#       selfHeal: false
+
+---
+apiVersion: argoproj.io/v1beta1
+kind: Application
+metadata:
+  name: bgd-app
+  namespace: openshift-gitops
+spec:
+  destination:
+    namespace: bgd
+    server: https://kubernetes.default.svc
+  project: default
+  source:
+    path: apps/bgd/overlays/bgd
+    repoURL: https://github.com/rhyspowell/developer-dave
+    targetRevision: main
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: false
