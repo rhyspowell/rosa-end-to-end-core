@@ -2,40 +2,30 @@
 apiVersion: project.openshift.io/v1
 kind: Project
 metadata:
-  name: developer-dave
+  name: developer-dan
   annotations:
-    openshift.io/description: team developer dave
-    openshift.io/display-name: developer-dave
+    openshift.io/description: team developer dan
+    openshift.io/display-name: developer-dan
   labels:
-    kubernetes.io/metadata.name: developer-dave
----
-apiVersion: project.openshift.io/v1
-kind: Project
-metadata:
-  name: secret-takeover-the-world
-  annotations:
-    openshift.io/description: ssshhhhhhh
-    openshift.io/display-name: shhhhhhh
-  labels:
-    kubernetes.io/metadata.name: shhhh
+    kubernetes.io/metadata.name: developer-dan
 ---
 kind: Group
 apiVersion: user.openshift.io/v1
 metadata:
-  name: developer-dave
+  name: developer-dan
   annotations:
-    description: Developer-dave and his team
+    description: Developer-dan and his team
 users:
-  - developer-dave
+  - developer-dan
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: developer-dave
-  namespace: developer-dave
+  name: developer-dan
+  namespace: developer-dan
 subjects:
   - kind: Group
-    name: developer-dave
+    name: developer-dan
     apiGroup: rbac.authorization.k8s.io
 roleRef:
   kind: ClusterRole
@@ -45,22 +35,36 @@ roleRef:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: secret-takeover-the-world
-  namespace: secret-takeover-the-world
+  name: developer-dan-dave
+  namespace: developer-dave
+subjects:
+  - kind: Group
+    name: developer-dan
+    apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: ClusterRole
+  name: view
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: developer-dave-dan
+  namespace: developer-dan
 subjects:
   - kind: Group
     name: developer-dave
     apiGroup: rbac.authorization.k8s.io
 roleRef:
   kind: ClusterRole
-  name: admin
+  name: view
   apiGroup: rbac.authorization.k8s.io
 ---
 apiVersion: argoproj.io/v1beta1
 kind: ArgoCD
 metadata:
-  name: developer-dave
-  namespace: developer-dave
+  name: developer-dan
+  namespace: developer-dan
 spec:
   server:
     route:
