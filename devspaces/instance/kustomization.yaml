@@ -1,9 +1,12 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
+namespace: openshift-devspaces
+
 commonAnnotations:
   argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+  argocd.argoproj.io/sync-wave: "20"
 
 resources:
-  - ../../../operator/overlays/stable
-  - ../../../instance/overlays/default
+  - namespace.yaml
+  - checluster.yaml
