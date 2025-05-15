@@ -68,17 +68,17 @@ spec:
       tls:
         insecureEdgeTerminationPolicy: Redirect
         termination: edge
-  sso:
-    dex:
-      openShiftOAuth: true
-      resources:
-        limits:
-          cpu: 500m
-          memory: 256Mi
-        requests:
-          cpu: 250m
-          memory: 128Mi
-    provider: dex
+  # sso:
+  #   dex:
+  #     openShiftOAuth: true
+  #     resources:
+  #       limits:
+  #         cpu: 500m
+  #         memory: 256Mi
+  #       requests:
+  #         cpu: 250m
+  #         memory: 128Mi
+  #   provider: dex
 ---
 apiVersion: argoproj.io/v1beta1
 kind: Application
