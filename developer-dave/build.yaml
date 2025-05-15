@@ -1,0 +1,75 @@
+apiVersion: project.openshift.io/v1
+kind: Project
+metadata:
+  name: developer-dave
+---
+apiVersion: project.openshift.io/v1
+kind: Project
+metadata:
+  name: secret-takeover-the-world
+---
+kind: Group
+apiVersion: user.openshift.io/v1
+metadata:
+  name: developer_dave
+  annotations:
+    description: Developer_dave and his team
+users:
+  - developer-dave
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: developer-dave
+  namespace: developer-dave
+subjects:
+  - kind: Group
+    name: developer-dave
+    apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: ClusterRole
+  name: admin
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: secret-takeover-the-world
+  namespace: secret-takeover-the-world
+subjects:
+  - kind: Group
+    name: developer-dave
+    apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: ClusterRole
+  name: admin
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: developer-dave-dan
+  namespace: developer-dan
+subjects:
+  - kind: Group
+    name: developer-dave
+    apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: ClusterRole
+  name: view
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: argoproj.io/v1beta1
+kind: ArgoCD
+metadata:
+  name: developer-dave
+  namespace: developer-dave
+spec:
+  server:
+    route:
+      enabled: true
+      path: /
+      tls:
+        insecureEdgeTerminationPolicy: Redirect
+        termination: passthrough
+      wildcardPolicy: None
