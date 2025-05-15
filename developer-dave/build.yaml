@@ -1,14 +1,3 @@
----
-apiVersion: project.openshift.io/v1
-kind: Project
-metadata:
-  name: developer-dave
-  annotations:
-    openshift.io/description: team developer dave
-    openshift.io/display-name: developer-dave
-  labels:
-    kubernetes.io/metadata.name: developer-dave
----
 apiVersion: project.openshift.io/v1
 kind: Project
 metadata:
@@ -56,29 +45,6 @@ roleRef:
   name: admin
   apiGroup: rbac.authorization.k8s.io
 ---
-apiVersion: argoproj.io/v1beta1
-kind: ArgoCD
-metadata:
-  name: developer-dave
-  namespace: developer-dave
-spec:
-  server:
-    route:
-      enabled: true
-      tls:
-        insecureEdgeTerminationPolicy: Redirect
-        termination: edge
-  # sso:
-  #   dex:
-  #     openShiftOAuth: true
-  #     resources:
-  #       limits:
-  #         cpu: 500m
-  #         memory: 256Mi
-  #       requests:
-  #         cpu: 250m
-  #         memory: 128Mi
-  #   provider: dex
 # ---
 # apiVersion: argoproj.io/v1beta1
 # kind: Application
