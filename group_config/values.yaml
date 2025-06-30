@@ -18,38 +18,14 @@ namespaces:
   - name: "developer-dave"
     operatorgroup: false
     bindings:
-      # this labs-devs is the GROUP NAME in IDM
       - name: developer_dave
         kind: Group
         role: admin
-      # this labs-admins is the GROUP NAME in IDM
-      - name: developer_dan
-        kind: Group
-        role: view
     namespace: developer-dave
   - name: developer-dan
     operatorgroup: false
     bindings:
-      - name: developer_dave
-        kind: Group
-        role: edit
       - name: developer_dan
         kind: Group
         role: admin
-      - name: dummy-sa
-        kind: ServiceAccount
-        role: admin
     namespace: developer_dan
-  - name: "secret-takeover-the-world"
-    operatorgroup: false
-    bindings:
-      - name: labs-devs
-        kind: Group
-        role: edit
-      - name: developer_dave
-        kind: Group
-        role: admin
-      - name: dummy-sa
-        kind: ServiceAccount
-        role: admin
-    namespace: secret_takeover_the_world
