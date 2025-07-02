@@ -11,4 +11,5 @@ resources:
 # wave 0
 - project-manager.yaml
 # wave 1
-- create-projects-and-resources-job.yaml
+- bootstrap.yaml
+- create-projects-and-resources.yaml
