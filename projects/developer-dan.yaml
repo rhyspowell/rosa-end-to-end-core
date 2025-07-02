@@ -1,0 +1,4 @@
+project: developer-dan
+users:
+ - name: developer-dan
+   role: admin
