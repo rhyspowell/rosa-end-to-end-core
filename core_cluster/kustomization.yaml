@@ -9,4 +9,4 @@ commonLabels:
 
 resources:
   - bootstrap.yaml
-  - create-and-apply-resources.yaml
+  - create-projects-and-resources.yaml
