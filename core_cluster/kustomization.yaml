@@ -8,8 +8,4 @@ commonLabels:
   component: projects
 
 resources:
-# wave 0
-- project-manager.yaml
-# wave 1
 - bootstrap.yaml
-- create-projects-and-resources.yaml
