@@ -29,32 +29,32 @@ spec:
 
               file_list=$(ls *.yaml)
 
-              echo "Found YAML files:"
-              for file in $file_list;
-              do
-              echo "  - $file"
-              json_data=$(python3 -c 'import sys, yaml, json; print(json.dumps(yaml.safe_load(sys.stdin)))' < $file)
-              echo "File data: $json_data"
+              # echo "Found YAML files:"
+              # for file in $file_list;
+              # do
+              # echo "  - $file"
+              # json_data=$(python3 -c 'import sys, yaml, json; print(json.dumps(yaml.safe_load(sys.stdin)))' < $file)
+              # echo "File data: $json_data"
 
-              project=$(echo "$json_data" | jq -r '.project // empty')
+              # project=$(echo "$json_data" | jq -r '.project // empty')
 
-              # create_project "$project"
+              # # create_project "$project"
 
-              cat <<EOF | oc apply -f -
-              apiVersion: project.openshift.io/v1
-              kind: Project
-              metadata:
-                annotations:
-                  openshift.io/description: ''
-                  openshift.io/display-name: $project_name
-                labels:
-                  kubernetes.io/metadata.name: $project_name
-                name: $project_name
-              spec:
-                finalizers:
-                - kubernetes
-              EOF
-              done  
+              # cat <<EOF | oc apply -f -
+              # apiVersion: project.openshift.io/v1
+              # kind: Project
+              # metadata:
+              #   annotations:
+              #     openshift.io/description: ''
+              #     openshift.io/display-name: $project_name
+              #   labels:
+              #     kubernetes.io/metadata.name: $project_name
+              #   name: $project_name
+              # spec:
+              #   finalizers:
+              #   - kubernetes
+              # EOF
+              # done  
               #   # Process users for this project
               #   users=$(echo "$json_data" | jq -r '.users[] | "\(.name):\(.role)"')
               #   for user_info in $users; do
