@@ -1,0 +1,73 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: core-cluster
+  namespace: openshift-gitops
+  annotations:
+    argocd.argoproj.io/hook: Sync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
+    argocd.argoproj.io/compare-options: IgnoreExtraneous
+spec:
+  backoffLimit: 4
+  template:
+    spec:
+      containers:
+        - name: create-and-apply-resources
+          image: image-registry.openshift-image-registry.svc:5000/openshift/tools:latest
+          imagePullPolicy: IfNotPresent
+          command: ["/bin/bash"]
+          args:
+            - -ec
+            - |-
+              echo "Start build"
+
+              cat <<EOF | oc apply -f -
+              apiVersion: project.openshift.io/v1
+              kind: Project
+              metadata:
+                annotations:
+                  openshift.io/description: ''
+                  openshift.io/display-name: developer-dan
+                labels:
+                  kubernetes.io/metadata.name: developer-dan
+                name: developer-dan
+              spec:
+                finalizers:
+                - kubernetes
+              EOF
+
+              # argocd
+              cat <<EOF | oc apply -f -
+              ---
+              apiVersion: argoproj.io/v1alpha1
+              kind: ArgoCD
+              metadata:
+                name: argocd
+                namespace: developer-dan
+              spec:
+                sso:
+                  dex:
+                    openShiftOAuth: true
+                    resources:
+                      limits:
+                        cpu: 500m
+                        memory: 256Mi
+                      requests:
+                        cpu: 250m
+                        memory: 128Mi
+                  provider: dex
+                rbac:
+                  defaultPolicy: "role:readonly"
+                  policy: "g, system:authenticated, role:admin"
+                  scopes: "[groups]"
+                server:
+                  insecure: true
+                  route:
+                    enabled: true
+                    tls:
+                      insecureEdgeTerminationPolicy: Redirect
+                      termination: edge
+              EOF
+
+              sleep 20
+      restartPolicy: Never

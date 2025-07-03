@@ -8,5 +8,5 @@ commonLabels:
   component: projects
 
 resources:
-  - bootstrap.yaml
-  - create-projects-and-resources.yaml
+  - developer-dan.yaml
+  - developer-dave.yaml
