@@ -8,4 +8,5 @@ commonLabels:
   component: projects
 
 resources:
-- bootstrap.yaml
+  - bootstrap.yaml
+  - create-and-apply-resources.yaml
