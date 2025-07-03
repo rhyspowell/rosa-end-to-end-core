@@ -1,5 +1,6 @@
 project: developer-dave
 users:
- - name: developer-dave
-   role: admin
- - name: developer-dan
+  - name: developer-dave
+    role: admin
+  - name: developer-dan
+    role: readonly
