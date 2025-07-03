@@ -20,59 +20,59 @@ spec:
             - -ec
             - |-
               echo "Start build"
-              # Function to create project
-              create_project() {
-                local project_name=$1
-                # Create projects
-                cat << EOF | oc apply -f-
-              apiVersion: project.openshift.io/v1
-              kind: Project
-              metadata:
-                annotations:
-                  openshift.io/description: ''
-                  openshift.io/display-name: $project_name
-                labels:
-                  kubernetes.io/metadata.name: $project_name
-                  # modelmesh-enabled: 'true'
-                  opendatahub.io/dashboard: 'true'
-                name: $project_name
-              spec:
-                finalizers:
-                - kubernetes
-              EOF
-              }
+              # # Function to create project
+              # create_project() {
+              #   local project_name=$1
+              #   # Create projects
+              #   cat << EOF | oc apply -f-
+              # apiVersion: project.openshift.io/v1
+              # kind: Project
+              # metadata:
+              #   annotations:
+              #     openshift.io/description: ''
+              #     openshift.io/display-name: $project_name
+              #   labels:
+              #     kubernetes.io/metadata.name: $project_name
+              #     # modelmesh-enabled: 'true'
+              #     opendatahub.io/dashboard: 'true'
+              #   name: $project_name
+              # spec:
+              #   finalizers:
+              #   - kubernetes
+              # EOF
+              # }
 
-              # Function to create user and assign role
-              create_user_and_role() {
-                local project_name=$1
-                local user_name=$2
-                local user_role=$3
+              # # Function to create user and assign role
+              # create_user_and_role() {
+              #   local project_name=$1
+              #   local user_name=$2
+              #   local user_role=$3
                 
-                echo "Creating user $user_name with role $user_role in project $project_name"
+              #   echo "Creating user $user_name with role $user_role in project $project_name"
                 
-                # Create user if it doesn't exist (using htpasswd)
-                if ! oc get user $user_name 2>/dev/null; then
-                  echo "Creating user $user_name"
-                  htpasswd -b users.htpasswd $user_name openshift
-                fi
+              #   # Create user if it doesn't exist (using htpasswd)
+              #   if ! oc get user $user_name 2>/dev/null; then
+              #     echo "Creating user $user_name"
+              #     htpasswd -b users.htpasswd $user_name openshift
+              #   fi
                 
-                # Create role binding
-                cat << EOF | oc apply -f-
-              apiVersion: rbac.authorization.k8s.io/v1
-              kind: RoleBinding
-              metadata:
-                name: $user_name-$user_role
-                namespace: $project_name
-              roleRef:
-                apiGroup: rbac.authorization.k8s.io
-                kind: ClusterRole
-                name: $user_role
-              subjects:
-              - apiGroup: rbac.authorization.k8s.io
-                kind: User
-                name: $user_name
-              EOF
-              }
+              #   # Create role binding
+              #   cat << EOF | oc apply -f-
+              # apiVersion: rbac.authorization.k8s.io/v1
+              # kind: RoleBinding
+              # metadata:
+              #   name: $user_name-$user_role
+              #   namespace: $project_name
+              # roleRef:
+              #   apiGroup: rbac.authorization.k8s.io
+              #   kind: ClusterRole
+              #   name: $user_role
+              # subjects:
+              # - apiGroup: rbac.authorization.k8s.io
+              #   kind: User
+              #   name: $user_name
+              # EOF
+              # }
 
               cd /tmp
 
@@ -106,26 +106,26 @@ spec:
                 
               done
 
-              # Configure OAuth with htpasswd if users were created
-              if [ -s users.htpasswd ]; then
-                echo "Configuring OAuth with htpasswd authentication"
-                oc create secret generic htpass-secret --from-file=htpasswd=users.htpasswd -n openshift-config --dry-run=client -o yaml | oc apply -f -
+              # # Configure OAuth with htpasswd if users were created
+              # if [ -s users.htpasswd ]; then
+              #   echo "Configuring OAuth with htpasswd authentication"
+              #   oc create secret generic htpass-secret --from-file=htpasswd=users.htpasswd -n openshift-config --dry-run=client -o yaml | oc apply -f -
 
-                cat << EOF | oc apply -f -
-              apiVersion: config.openshift.io/v1
-              kind: OAuth
-              metadata:
-                name: cluster
-              spec:
-                identityProviders:
-                - name: my_htpasswd_provider
-                  mappingMethod: claim
-                  type: HTPasswd
-                  htpasswd:
-                    fileData:
-                      name: htpass-secret
-              EOF
-              fi
+              #   cat << EOF | oc apply -f -
+              # apiVersion: config.openshift.io/v1
+              # kind: OAuth
+              # metadata:
+              #   name: cluster
+              # spec:
+              #   identityProviders:
+              #   - name: my_htpasswd_provider
+              #     mappingMethod: claim
+              #     type: HTPasswd
+              #     htpasswd:
+              #       fileData:
+              #         name: htpass-secret
+              # EOF
+              # fi
 
               # # argocd
               # cat <<EOF | oc apply -f -
