@@ -19,6 +19,7 @@ spec:
           args:
             - -ec
             - |-
+              echo "Start build"
               # Function to create project
               create_project() {
                 local project_name=$1
