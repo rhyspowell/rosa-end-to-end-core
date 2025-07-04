@@ -25,6 +25,8 @@ spec:
               # Get user count
               user_count=2
               # create fake showroom users
+              wget https://raw.githubusercontent.com/rhyspowell/rosa-end-to-end-core/refs/heads/main/core-cluster/users.txt
+
               for i in "developer-dan" "developer-dave"
               do
                   oc create namespace $i
