@@ -22,45 +22,14 @@ spec:
           args:
             - -ec
             - |-
-              # Get user count
-              user_count=2
-              # create fake showroom users
-              wget https://raw.githubusercontent.com/rhyspowell/rosa-end-to-end-core/refs/heads/main/core-cluster/users.txt
-
-              for i in "developer-dan" "developer-dave"
-              do
-                  oc create namespace $i
-              done
-
-              oc create secret generic htpass-secret --from-file=htpasswd=users.txt -n openshift-config
-
-
-              cat << EOF | oc apply -f -
-              apiVersion: config.openshift.io/v1
-              kind: OAuth
-              metadata:
-                name: cluster
-              spec:
-                identityProviders:
-                - name: my_htpasswd_provider
-                  mappingMethod: claim
-                  type: HTPasswd
-                  htpasswd:
-                    fileData:
-                      name: htpass-secret
-              EOF
-              user_count = 2
-              fi
-
-
               # Define some variables
               PIPELINE_ENGINE="Tekton"
 
-              for i in $(seq 1 $user_count);
+              for i in "dave" "dan";
               do
               # Construct dynamic variables
-              USER_NAME="user$i"
-              USER_PROJECT="user$i"
+              USER_NAME="developer-$i"
+              USER_PROJECT="project-$i"
 
               echo "Generating and apply resources for $USER_NAME..."
 
