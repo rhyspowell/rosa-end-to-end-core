@@ -25,13 +25,12 @@ spec:
               # Get user count
               user_count=2
               # create fake showroom users
-              for i in $(seq 1 2);
+              for i in "developer-dan" "developer-dave"
               do
-                  # htpasswd -c -B -b users.htpasswd $i openshift
-                  oc create namespace showroom-user$i
+                  oc create namespace $i
               done
 
-              # oc create secret generic htpass-secret --from-file=htpasswd=users.htpasswd -n openshift-config
+              oc create secret generic htpass-secret --from-file=htpasswd=users.txt -n openshift-config
 
 
               cat << EOF | oc apply -f -
