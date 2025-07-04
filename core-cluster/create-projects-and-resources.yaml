@@ -1,0 +1,188 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: create-and-apply-resources
+  namespace: ic-user-projects
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+    argocd.argoproj.io/hook: Sync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
+    argocd.argoproj.io/compare-options: IgnoreExtraneous
+spec:
+  backoffLimit: 4
+  template:
+    spec:
+      serviceAccount: project-creator
+      serviceAccountName: project-creator
+      containers:
+        - name: create-and-apply-resources
+          image: image-registry.openshift-image-registry.svc:5000/openshift/tools:latest
+          imagePullPolicy: IfNotPresent
+          command: ["/bin/bash"]
+          args:
+            - -ec
+            - |-
+              # Get user count
+              user_count=2
+              # create fake showroom users
+              for i in $(seq 1 2);
+              do
+                  htpasswd -c -B -b users.htpasswd $i openshift
+                  oc create namespace showroom-user$i
+              done
+
+              oc create secret generic htpass-secret --from-file=htpasswd=users.htpasswd -n openshift-config
+
+
+              cat << EOF | oc apply -f -
+              apiVersion: config.openshift.io/v1
+              kind: OAuth
+              metadata:
+                name: cluster
+              spec:
+                identityProviders:
+                - name: my_htpasswd_provider
+                  mappingMethod: claim
+                  type: HTPasswd
+                  htpasswd:
+                    fileData:
+                      name: htpass-secret
+              EOF
+              user_count = 2
+              fi
+
+
+              # Define some variables
+              PIPELINE_ENGINE="Tekton"
+
+              for i in $(seq 1 $user_count);
+              do
+              # Construct dynamic variables
+              USER_NAME="user$i"
+              USER_PROJECT="user$i"
+
+              echo "Generating and apply resources for $USER_NAME..."
+
+              # Create projects
+              cat << EOF | oc apply -f-
+              apiVersion: project.openshift.io/v1
+              kind: Project
+              metadata:
+                annotations:
+                  openshift.io/description: ''
+                  openshift.io/display-name: $USER_PROJECT
+                labels:
+                  kubernetes.io/metadata.name: $USER_PROJECT
+                  # modelmesh-enabled: 'true'
+                  # opendatahub.io/dashboard: 'true'
+                name: $USER_PROJECT
+              spec:
+                finalizers:
+                - kubernetes
+              EOF
+
+              # Apply role bindings
+              cat << EOF | oc apply -f-
+              apiVersion: rbac.authorization.k8s.io/v1
+              kind: RoleBinding
+              metadata:
+                name: admin
+                namespace: $USER_PROJECT
+              roleRef:
+                apiGroup: rbac.authorization.k8s.io
+                kind: ClusterRole
+                name: admin
+              subjects:
+              - apiGroup: rbac.authorization.k8s.io
+                kind: User
+                name: $USER_NAME
+              - kind: ServiceAccount
+                name: my-workbench
+              ---
+              apiVersion: v1
+              kind: ServiceAccount
+              metadata:
+                name: demo-setup
+                namespace: $USER_PROJECT
+              ---
+              apiVersion: rbac.authorization.k8s.io/v1
+              kind: RoleBinding
+              metadata:
+                name: demo-setup-edit
+                namespace: $USER_PROJECT
+              roleRef:
+                apiGroup: rbac.authorization.k8s.io
+                kind: ClusterRole
+                name: edit
+              subjects:
+              - kind: ServiceAccount
+                name: demo-setup
+              ---
+              kind: ClusterRoleBinding
+              apiVersion: rbac.authorization.k8s.io/v1
+              metadata:
+                name: demo-setup-route-reader-binding-$USER_PROJECT
+              subjects:
+              - kind: ServiceAccount
+                name: demo-setup
+                namespace: $USER_PROJECT
+              roleRef:
+                kind: ClusterRole
+                name: route-reader
+                apiGroup: rbac.authorization.k8s.io
+              ---
+              kind: RoleBinding
+              apiVersion: rbac.authorization.k8s.io/v1
+              metadata:
+                name: elyra-pipelines-$WORKBENCH_NAME
+                namespace: $USER_PROJECT
+                labels:
+                  opendatahub.io/dashboard: 'true'
+              subjects:
+                - kind: ServiceAccount
+                  name: $WORKBENCH_NAME
+              roleRef:
+                apiGroup: rbac.authorization.k8s.io
+                kind: Role
+                name: ds-pipeline-user-access-pipelines-definition
+              EOF
+
+
+
+              # argocd
+              cat <<EOF | oc apply -f -
+              ---
+              apiVersion: argoproj.io/v1alpha1
+              kind: ArgoCD
+              metadata:
+                name: argocd
+                namespace: $USER_PROJECT
+              spec:
+                sso:
+                  dex:
+                    openShiftOAuth: true
+                    resources:
+                      limits:
+                        cpu: 500m
+                        memory: 256Mi
+                      requests:
+                        cpu: 250m
+                        memory: 128Mi
+                  provider: dex
+                rbac:
+                  defaultPolicy: "role:readonly"
+                  policy: "g, system:authenticated, role:admin"
+                  scopes: "[groups]"
+                server:
+                  insecure: true
+                  route:
+                    enabled: true
+                    tls:
+                      insecureEdgeTerminationPolicy: Redirect
+                      termination: edge
+              EOF
+
+              sleep 20
+
+              done
+      restartPolicy: Never
