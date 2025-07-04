@@ -27,11 +27,11 @@ spec:
               # create fake showroom users
               for i in $(seq 1 2);
               do
-                  htpasswd -c -B -b users.htpasswd $i openshift
+                  # htpasswd -c -B -b users.htpasswd $i openshift
                   oc create namespace showroom-user$i
               done
 
-              oc create secret generic htpass-secret --from-file=htpasswd=users.htpasswd -n openshift-config
+              # oc create secret generic htpass-secret --from-file=htpasswd=users.htpasswd -n openshift-config
 
 
               cat << EOF | oc apply -f -
