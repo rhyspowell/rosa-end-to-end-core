@@ -3,4 +3,5 @@ kind: Kustomization
 
 bases:
   - operator
-  - instance
+  - github.com/redhat-cop/gitops-catalog/openshift-dev-spaces/operator/overlays/stable?ref=main
+  - github.com/redhat-cop/gitops-catalog/openshift-dev-spaces/instance/base?ref=main
