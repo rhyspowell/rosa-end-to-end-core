@@ -43,8 +43,6 @@ spec:
                   openshift.io/display-name: $USER_PROJECT
                 labels:
                   kubernetes.io/metadata.name: $USER_PROJECT
-                  # modelmesh-enabled: 'true'
-                  # opendatahub.io/dashboard: 'true'
                 name: $USER_PROJECT
               spec:
                 finalizers:
@@ -56,7 +54,7 @@ spec:
               apiVersion: rbac.authorization.k8s.io/v1
               kind: RoleBinding
               metadata:
-                name: admin
+                name: $USER_PROJECT-admin
                 namespace: $USER_PROJECT
               roleRef:
                 apiGroup: rbac.authorization.k8s.io
@@ -66,43 +64,7 @@ spec:
               - apiGroup: rbac.authorization.k8s.io
                 kind: User
                 name: $USER_NAME
-              - kind: ServiceAccount
-                name: my-workbench
-              ---
-              apiVersion: v1
-              kind: ServiceAccount
-              metadata:
-                name: demo-setup
-                namespace: $USER_PROJECT
-              ---
-              apiVersion: rbac.authorization.k8s.io/v1
-              kind: RoleBinding
-              metadata:
-                name: demo-setup-edit
-                namespace: $USER_PROJECT
-              roleRef:
-                apiGroup: rbac.authorization.k8s.io
-                kind: ClusterRole
-                name: edit
-              subjects:
-              - kind: ServiceAccount
-                name: demo-setup
-              ---
-              kind: ClusterRoleBinding
-              apiVersion: rbac.authorization.k8s.io/v1
-              metadata:
-                name: demo-setup-route-reader-binding-$USER_PROJECT
-              subjects:
-              - kind: ServiceAccount
-                name: demo-setup
-                namespace: $USER_PROJECT
-              roleRef:
-                kind: ClusterRole
-                name: route-reader
-                apiGroup: rbac.authorization.k8s.io
               EOF
-
-
 
               # argocd
               cat <<EOF | oc apply -f -
@@ -113,6 +75,8 @@ spec:
                 name: argocd
                 namespace: $USER_PROJECT
               spec:
+                notifications:
+                  enabled: true
                 sso:
                   dex:
                     openShiftOAuth: true
